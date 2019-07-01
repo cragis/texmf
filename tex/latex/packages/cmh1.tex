@@ -1,0 +1,283 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{cmh1}[2018/03/18 CMH1 Package]
+
+\RequirePackage{lmodern}
+\RequirePackage[english]{babel}
+\RequirePackage{fancyhdr}
+\RequirePackage{lastpage}
+\RequirePackage{tikz}
+\RequirePackage{titling}
+\RequirePackage{amsthm}
+\RequirePackage{fp}
+\RequirePackage{tabu}
+\RequirePackage{adjustbox}
+\RequirePackage[per-mode=symbol]{siunitx}
+\RequirePackage[siunitx]{circuitikz}
+\RequirePackage{indentfirst}
+\RequirePackage{tabto}
+\RequirePackage{graphicx}
+\RequirePackage{csquotes}
+\RequirePackage{needspace}
+\RequirePackage{lastpage}
+
+%% 'sans serif' option
+\DeclareOption{sans}{
+  \renewcommand{\familydefault}{\sfdefault}
+}
+
+%% 'roman' option
+\DeclareOption{roman}{
+  \renewcommand{\familydefault}{\rmdefault}
+}
+
+%% Global indentation option
+\newif\if@neverindent\@neverindentfalse
+\DeclareOption{neverindent}{
+  \@neverindenttrue
+}
+
+\ExecuteOptions{roman}
+
+\ProcessOptions\relax
+
+%% Traditional LaTeX or TeX follows...
+% ...
+
+\newlength{\pardefault}
+\setlength{\pardefault}{\parindent}
+\newcommand{\neverindent}{ \setlength{\parindent}{0pt} }
+\newcommand{\autoindent}{ \setlength{\parindent}{\pardefault} }
+
+\if@neverindent
+\neverindent
+\fi
+
+% ...
+
+
+
+
+\geometry{top=.7in,
+bottom=.5in,
+headsep=0cm,
+footskip=0.3cm,
+  left=12mm, % left margin
+  textwidth=150mm, % main text block
+  marginparsep=2mm, % gutter between main text block and margin notes
+  marginparwidth=50.mm % width of margin notes
+}
+
+
+
+\usetikzlibrary{decorations.text}
+\usetikzlibrary{decorations.pathmorphing}
+
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns}
+\usetikzlibrary{shapes}
+\usetikzlibrary{plotmarks}
+
+
+
+
+
+
+\MakeOuterQuote{"}
+
+\newtheoremstyle{QS} %for questions leaving answer space after (the 2.5cm space below
+{0pt} % Space above
+{2 cm} % Space below
+{} % Body font
+{\parindent} % Indent amount
+{\bfseries} % Theorem head font
+{:} % Punctuation after theorem head
+{0.5 em} % Space after theorem head
+%\Needspace{3\baselineskip} 
+{\thmname{#1}\thmnumber{#2}\thmnote{. #3}} % Theorem head spec (can be left empty, meaning `normal')
+
+
+
+
+
+\newtheoremstyle{qS} %for questions leaving answer space after (the 0.5cm space below
+{0pt} % Space above
+{0.5cm} % Space below
+{} % Body font
+{\parindent} % Indent amount
+{\bfseries} % Theorem head font
+{:} % Punctuation after theorem head
+{0.5 em} % Space after theorem head
+{\thmname{#1}\thmnumber{#2}\thmnote{. #3}} % Theorem head spec (can be left empty, meaning `normal')  
+  
+  
+\theoremstyle{QS}  
+\newtheorem{Q}{HW}
+
+\AtBeginEnvironment{Q}{\Needspace{3cm}}% \break if fewer than 3cm is available on page
+
+\theoremstyle{qS}
+\newtheorem{q}[Q]{HW}
+
+
+
+
+
+%defining circuitikz bulb symbol with filament
+\makeatletter
+% used to process styles for to-path
+\def\TikzBipolePath#1#2{\pgf@circ@bipole@path{#1}{#2}}
+% restore size value for bipole definitions
+\pgf@circ@Rlen = \pgfkeysvalueof{/tikz/circuitikz/bipoles/length}
+\makeatother
+\newlength{\ResUp} \newlength{\ResDown}
+\newlength{\ResLeft} \newlength{\ResRight}
+
+% bulb (lamp)
+\ctikzset{bipoles/bulb/height/.initial=0.60}
+\ctikzset{bipoles/bulb/width/.initial=.60}
+\pgfcircdeclarebipole{}
+{\ctikzvalof{bipoles/bulb/height}}
+{bulb}
+{\ctikzvalof{bipoles/bulb/height}}
+{\ctikzvalof{bipoles/bulb/width}}
+{
+\pgfsetlinewidth{\pgfkeysvalueof{/tikz/circuitikz/bipoles/thickness}\pgfstartlinewidth}
+\pgfextracty{\ResUp}{\northeast}
+\pgfextractx{\ResRight}{\northeast}
+\pgfextractx{\ResLeft}{\southwest}
+\pgfextracty{\ResDown}{\southwest}
+\pgfpathellipse{\pgfpointorigin}{\pgfpoint{0}{\ResUp}}{\pgfpoint{\ResLeft}{0}}
+\pgfmoveto{\pgfpoint{\ResLeft}{0}}
+\pgfpathcurveto{\pgfpoint{0}{0}}{\pgfpoint{.7\ResLeft}{.7\ResDown}}{\pgfpoint{0}{.5\ResDown}}
+\pgfpathcurveto{\pgfpoint{\ResRight}{\ResUp}}{\pgfpoint{\ResLeft}{\ResUp}}{\pgfpoint{0}{-.5\ResUp}}
+\pgfpathcurveto{\pgfpoint{.7\ResRight}{.7\ResDown}}{\pgfpoint{0}{0}}{\pgfpoint{-\ResLeft}{0}}
+\pgfusepath{draw}
+}
+\def\bulbpath#1{\TikzBipolePath{bulb}{#1}}
+\tikzset{bulb/.style = {\circuitikzbasekey, /tikz/to path=\bulbpath, l=#1}}
+
+% bulb (lamp)
+\ctikzset{bipoles/bulb2/height/.initial=0.60}
+\ctikzset{bipoles/bulb2/width/.initial=.60}
+\pgfcircdeclarebipole{}
+{\ctikzvalof{bipoles/bulb2/height}}
+{bulb2}
+{\ctikzvalof{bipoles/bulb2/height}}
+{\ctikzvalof{bipoles/bulb2/width}}
+{
+\pgfsetlinewidth{\pgfkeysvalueof{/tikz/circuitikz/bipoles/thickness}\pgfstartlinewidth}
+\pgfextracty{\ResUp}{\northeast}
+\pgfextractx{\ResRight}{\northeast}
+\pgfextractx{\ResLeft}{\southwest}
+\pgfextracty{\ResDown}{\southwest}
+\pgfpathellipse{\pgfpointorigin}{\pgfpoint{0}{\ResUp}}{\pgfpoint{\ResLeft}{0}}
+\pgfmoveto{\pgfpoint{\ResLeft}{0}}
+\pgfpathcurveto{\pgfpoint{0}{0}}{\pgfpoint{.7\ResLeft}{.7\ResDown}}{\pgfpoint{0}{.5\ResDown}}
+\pgfpathcurveto{\pgfpoint{\ResRight}{\ResUp}}{\pgfpoint{\ResLeft}{\ResUp}}{\pgfpoint{0}{-.5\ResUp}}
+\pgfpathcurveto{\pgfpoint{.7\ResRight}{.7\ResDown}}{\pgfpoint{0}{0}}{\pgfpoint{-\ResLeft}{0}}
+\pgfusepath{draw}
+}
+\def\bulb2path#1{\TikzBipolePath{bulb2}{#1}}
+\tikzset{bulb2/.style = {\circuitikzbasekey, /tikz/to path=\bulb2path, l=#1}}
+
+
+
+
+\def\parsedate #1:20#2#3#4#5#6#7#8\empty{#4#5/20#2#3}
+\def\moddate#1{\expandafter\parsedate\pdffilemoddate{#1}\empty}\pagestyle{fancy} %page numbering and header
+\fancyhf{}
+
+\rhead{\flushright\theactivity\hspace{1cm}\thepage /\pageref{LastPage}}
+\lfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\newcommand{\theactivity}{NN}
+\renewcommand{\theactivity}{\mytitle}
+\fancypagestyle{plain}{%
+\fancyhf{} % clear all header and footer fields
+\lhead{\flushleft\textbf{\large{\mytitle}}} 
+%\rhead{Name:\underline{\hspace{5cm}}}%\rule{2in}{.5pt}
+\fancyfoot[L]{\tiny{C. Howald, Marietta College (\moddate{\jobname.tex})}} % except the footer
+%\fancyfoot[R]{\small{more on reverse $\rightarrow$}} % except the footer
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+
+\def\bulb#1#2{
+\begin{scope}[shift={#1}, rotate=#2,scale=.25]
+    \begin{scope}[shift={(0,3.7)}]
+    	\draw[fill=white] (0,1) circle (2cm);
+		\draw[white,fill=white] (-1.1,-.6) rectangle (1.1,-1.7);
+		\draw (-1.1,-.67) to (-1.1,-1.8);
+		\draw (1.1,-.67) to (1.1,-1.8);
+		\draw (-.3,-3.4) rectangle (.3,-3.7);
+		\draw[fill=white] (0,-3) circle [x radius=1cm, y radius=0.5cm];
+		\draw[white,fill=white] (-.3,-3.4) rectangle (.3,-3.7);
+		\draw (-.3,-3.46) rectangle (.3,-3.7);
+		\draw[fill=white] (-1.1,-1.7) rectangle (1.1,-3);
+		%\draw (-1,-7) rectangle (1,-4);
+		%\draw (-.2,-4) rectangle (.2,-3.8);
+		%\draw (0,-3.7) to (0,-3.8);
+	\end{scope}
+\end{scope}
+}
+
+\def\battery#1#2{
+\begin{scope}[shift={#1}, rotate=#2]
+    \begin{scope}[shift={(0,0)}]
+
+		\draw (-.33,0) rectangle (.33,.933);
+		\draw (-.066,.933) rectangle (.066,1);
+		%\draw (0,-3.7) to (0,-3.8);
+	\end{scope}
+\end{scope}
+}
+
+\def\switch#1#2{
+\begin{scope}[shift={#1}, rotate=#2]
+    \begin{scope}[shift={(0,0)}]
+
+		
+		\draw (.8,-.15) rectangle (1,.15);
+		\begin{scope}[rotate=30]
+			\draw (0,-.1) rectangle (1.3,.1);
+		\end{scope}
+		\draw[fill=white] (0,-.15) rectangle (.2,.15);
+		\draw (-.1,-.35) rectangle (1.1,-.15);
+	\end{scope}
+\end{scope}
+}
+
+
+\setcounter{secnumdepth}{3}
+
+% chapter format
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\chapter}{\if@openright\cleardoublepage\else\clearpage\fi}{}{}{}
+\makeatother
+
+\titleformat{\chapter}
+  [block]% shape
+  {\relax\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
+  {\LARGE\thechapter}% label
+  {1em}% horizontal separation between label and title body
+  {\LARGE\rmfamily}% before the title body
+  [\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\end{fullwidth}}{}]% after the title body
+  
+\titleformat{\section}
+  [block]% shape
+  {\relax\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
+  {\LARGE\thesection}% label
+  {1em}% horizontal separation between label and title body
+  {\LARGE\rmfamily}% before the title body
+  [\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\end{fullwidth}}{}]% after the title body
+    
+  
+\setcounter{secnumdepth}{2}
+\titlespacing{\chapter}{0pt}{5pt}{0pt}
+\titlespacing{\section}{0pt}{5pt}{0pt}
+\titlespacing{\subsection}{0pt}{5pt}{0pt}
+
+
+
+\endinput

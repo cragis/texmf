@@ -1,0 +1,392 @@
+\def\optsetxandyvecbyvalueofkey#1{
+  \optsetxvecbyvalueofkey{#1}
+  \optsetyvecbyvalueofkey{#1}
+}
+\def\optsetxvecbyvalueofkey#1{
+  \pgfsetxvec{\pgfpoint{\pgfkeysvalueof{#1}}{0pt}}
+}
+\def\optsetyvecbyvalueofkey#1{
+  \pgfsetyvec{\pgfpoint{0pt}{\pgfkeysvalueof{#1}}}
+}
+
+% Todo: find out whether this is the right way to introduce keys
+% Todo: merge generic height / width with lenses
+\pgfkeyssetvalue{/tikz/waist}{0.5cm} % Standard waist
+\pgfkeyssetvalue{/tikz/optics diameter}{1cm} % Height of lenses / plates etc
+\pgfkeyssetvalue{/tikz/beam splitter width}{0.75 cm} % Height of cubes
+\pgfkeyssetvalue{/tikz/flip beam splitter axis}{0} % 1 to flip diagonal 
+\pgfkeyssetvalue{/tikz/optical element width}{3cm} % Generic width
+\pgfkeyssetvalue{/tikz/optical element height}{1cm} % Generic height
+
+
+% Define shapes
+
+
+% Vertical optical elements are vertical on paper (i.e. a vertical
+% waveplate), that is the beam passes horizontally through it
+
+% Vertical optical element
+\pgfdeclareshape{vertical optical element}{
+  \savedanchor{\southwest}{%
+    \optsetxvecbyvalueofkey{/tikz/optical element width}
+    \optsetyvecbyvalueofkey{/tikz/optical element height}
+    \pgfpointxy{-0.5}{-0.5}}
+  \savedanchor{\northeast}{%
+    \optsetxvecbyvalueofkey{/tikz/optical element width}
+    \optsetyvecbyvalueofkey{/tikz/optical element height}
+    \pgfpointxy{0.5}{0.5}}
+  \savedanchor{\beamnorth}{
+    \pgfpointorigin
+    \pgf@xa = \pgf@x \pgf@ya=\pgf@y \advance\pgf@ya by
+    \pgfkeysvalueof{/tikz/waist}
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+  
+  \anchor{north}{
+    % store lower left in xa/ya and upper right in xb/yb 
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y 
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpoint{0}{\pgf@yb}
+  }
+  \anchor{north west}{
+    % store lower left in xa/ya and upper right in xb/yb 
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y 
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpoint{\pgf@xa}{\pgf@yb}
+  }
+  \anchor{west}{
+    % store lower left in xa/ya and upper right in xb/yb 
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y 
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpoint{\pgf@xa}{0}
+  }
+  \anchor{south west}{\southwest}
+  \anchor{south}{
+    % store lower left in xa/ya and upper right in xb/yb 
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y 
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpoint{0}{\pgf@ya}
+  }
+  \anchor{south east}{
+    % store lower left in xa/ya and upper right in xb/yb 
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y 
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpoint{\pgf@xb}{\pgf@ya}
+  }
+  \anchor{east}{
+    % store lower left in xa/ya and upper right in xb/yb 
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y 
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgfpoint{\pgf@xb}{0}
+  }
+  \anchor{north east}{\northeast}
+  \anchor{center}{\pgfpointorigin}
+
+  \anchor{beam north}{\beamnorth}
+  
+  \anchor{beam north west}{%
+    \southwest \pgf@xa=\pgf@x
+    \beamnorth \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by \pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+  \anchor{beam south west}{%
+    \southwest \pgf@xa=\pgf@x
+    \beamnorth \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by -\pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+  \anchor{beam south}{
+    \beamnorth \pgf@ya=-\pgf@y
+    \pgfpointorigin \pgf@xa = \pgf@x
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+  \anchor{beam south east}{%
+    \northeast \pgf@xa=\pgf@x
+    \beamnorth \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by -\pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+  \anchor{beam north east}{
+    \northeast \pgf@xa=\pgf@x
+    \beamnorth \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by \pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+  
+  \backgroundpath{
+    % No rounded corners 
+    \pgfsetcornersarced{\pgfpointorigin}
+    \pgfpathrectanglecorners{\northeast}{\southwest}
+  }
+}
+
+% Vertical wave plate
+\tikzset{vertical wave plate/.style={vertical optical element,
+    optical element height=\pgfkeysvalueof{/tikz/optics diameter},
+    optical element width=0.1*\pgfkeysvalueof{/tikz/optics diameter}}}
+
+\pgfdeclareshape{vertical cavity}{
+  \savedanchor{\southwest}{%
+    \optsetxvecbyvalueofkey{/tikz/optical element width}
+    \optsetyvecbyvalueofkey{/tikz/optical element height}
+    \pgfpointxy{-0.5}{-0.5}}
+  \savedanchor{\innersouthwest}{%
+    \optsetxvecbyvalueofkey{/tikz/optical element width}
+    \optsetyvecbyvalueofkey{/tikz/optical element height}
+    \pgfpointxy{-0.4}{-0.5}}
+  \savedanchor{\northeast}{%
+    \optsetxvecbyvalueofkey{/tikz/optical element width}
+    \optsetyvecbyvalueofkey{/tikz/optical element height}
+    \pgfpointxy{0.5}{0.5}}
+  \savedanchor{\innernortheast}{%
+    \optsetxvecbyvalueofkey{/tikz/optical element width}
+    \optsetyvecbyvalueofkey{/tikz/optical element height}
+    \pgfpointxy{0.4}{0.5}}
+  \savedanchor{\beamnorth}{
+    \pgfpointorigin
+    \pgf@xa = \pgf@x \pgf@ya=\pgf@y \advance\pgf@ya by
+    \pgfkeysvalueof{/tikz/waist}
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+  \inheritanchor[from=vertical optical element]{north}
+  \inheritanchor[from=vertical optical element]{north west}
+  \inheritanchor[from=vertical optical element]{west}
+  \inheritanchor[from=vertical optical element]{south west}
+  \inheritanchor[from=vertical optical element]{south}
+  \inheritanchor[from=vertical optical element]{south east}
+  \inheritanchor[from=vertical optical element]{east}
+  \inheritanchor[from=vertical optical element]{north east}
+  \inheritanchor[from=vertical optical element]{center}
+  \inheritanchor[from=vertical optical element]{beam north}
+  \inheritanchor[from=vertical optical element]{beam north west}
+  \inheritanchor[from=vertical optical element]{beam south west}
+  \inheritanchor[from=vertical optical element]{beam south}
+  \inheritanchor[from=vertical optical element]{beam south east}
+  \inheritanchor[from=vertical optical element]{beam north east}
+
+  \backgroundpath{
+    % No rounded corners
+    \pgfsetcornersarced{\pgfpointorigin}
+    \optsetxvecbyvalueofkey{/tikz/optical element width}
+    \optsetyvecbyvalueofkey{/tikz/optical element height}
+
+    % Calculate mirror params
+    % Todo make them keys
+    \newdimen\curvature
+    \pgfextractx{\curvature}{\pgfpointxy{0.75}{0}}
+    \newdimen\mirrorheight
+    \pgfextracty{\mirrorheight}{\pgfpointxy{0}{1}}
+    \def\cavityangle{asin(\mirrorheight/(2*\curvature))}
+    
+    \pgfpathmoveto{\southwest}
+    \pgfpathlineto{\innersouthwest}
+    \pgfpatharc{180+\cavityangle}{180-\cavityangle}{\curvature}
+    \northeast \pgf@ya = \pgf@y
+    \southwest \pgf@xa = \pgf@x
+    \pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathclose
+
+    \pgfpathmoveto{\northeast}
+    \pgfpathlineto{\innernortheast}
+    \pgfpatharc{\cavityangle}{-\cavityangle}{\curvature}
+    \northeast \pgf@xa = \pgf@x
+    \southwest \pgf@ya = \pgf@y
+    \pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathclose
+
+    
+  }
+
+}
+
+% Lens
+% Todo: Find out how width of lens scales nicely if height is changed
+% Todo: make it inherit the nodes from vertical optical element where possible
+\pgfdeclareshape{vertical lens}{%
+  \savedanchor{\centerpoint}{\pgfpointorigin}
+  \savedanchor{\semiminor}{%
+    \optsetxandyvecbyvalueofkey{/tikz/optics diameter} \pgfpointxy{0.2}{0}}
+  \savedanchor{\semimajor}{%
+    \optsetxandyvecbyvalueofkey{/tikz/optics diameter} \pgfpointxy{0}{0.5}}
+
+  \savedanchor{\beamnorth}{%
+    \pgfpointorigin
+    \pgf@xa = \pgf@x
+    \pgf@ya = \pgf@y \advance\pgf@ya by \pgfkeysvalueof{/tikz/waist}
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+
+  \anchor{center}{\centerpoint}    
+  \anchor{north}{\semimajor}
+  \anchor{east}{\semiminor}
+  \anchor{west}{%
+    \pgf@process{\semiminor} \pgf@xa = -\pgf@x \pgf@ya=\pgf@y
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+  \anchor{south}{%
+    \pgf@process{\semimajor} \pgf@xa = \pgf@x \pgf@ya =-\pgf@y
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+
+  \anchor{beam north}{\beamnorth}
+  \anchor{beam south}{
+    \beamnorth \pgf@xa=\pgf@x \pgf@ya = -\pgf@y
+    \pgfpoint{\pgf@xa}{\pgf@ya}
+  }
+
+  \backgroundpath{
+    % No rounded corners 
+    \pgfsetcornersarced{\pgfpointorigin}
+    \semimajor \pgf@xa =\pgf@x \pgf@ya = \pgf@y
+    \semiminor \pgf@xb = \pgf@x \pgf@yb = \pgf@y
+
+    % Calculate x and y coordinates of support for bezier curve
+    \pgf@xc = \pgf@xb \advance \pgf@xc by 0.1\pgf@xb
+    \pgf@yc = 0.5\pgf@ya
+    
+    % Draw first half of the lens
+    \pgfpathmoveto{\pgfpoint{0}{-\pgf@ya}}
+    \pgfpathcurveto{\pgfpoint{\pgf@xc}{-\pgf@yc}}
+    {\pgfpoint{\pgf@xc}{\pgf@yc}}{\pgfpoint{\pgf@xa}{\pgf@ya}}
+
+    % Todo: get rid of this repition, somehow ya gets overwritten by the
+    % above path
+    \semimajor \pgf@xa =\pgf@x \pgf@ya = \pgf@y
+    \semiminor \pgf@xb = \pgf@x \pgf@yb = \pgf@y
+
+    % Calculate x and y coordinates of support for bezier curve
+    \pgf@xc = \pgf@xb \advance \pgf@xc by 0.1\pgf@xb
+    \pgf@yc = 0.5\pgf@ya
+
+    % Draw second half of lens
+    \pgfpathcurveto{\pgfpoint{-\pgf@xc}{\pgf@yc}}
+    {\pgfpoint{-\pgf@xc}{-\pgf@yc}}{\pgfpoint{0}{-\pgf@ya}}
+    \pgfpathclose
+  }
+}
+
+
+% Horizontal optical elements are horizontal on paper (i.e. a horizontal
+% waveplate), that is the beam passes vertically through it
+
+
+% Cross optical elements are ones through which the beam may pass both
+% horizontally and vertically
+
+% Beamsplitter
+% Todo respect minimum width
+\pgfdeclareshape{beam splitter}{%
+  \savedanchor{\southwest}{%
+    \optsetxandyvecbyvalueofkey{/tikz/beam splitter width} \pgfpointxy{-0.5}{-0.5}}
+  \savedanchor{\northeast}{%
+    \optsetxandyvecbyvalueofkey{/tikz/beam splitter width} \pgfpointxy{0.5}{0.5}}
+  \savedanchor{\beamnee}{%
+    \optsetxandyvecbyvalueofkey{/tikz/beam splitter width} \pgfpointxy{0.5}{0.5}
+    \pgf@xa = \pgf@x 
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by \pgfkeysvalueof{/tikz/waist}
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+  
+  \inheritanchor[from=vertical optical element]{north}
+  \inheritanchor[from=vertical optical element]{north west}
+  \inheritanchor[from=vertical optical element]{west}
+  \inheritanchor[from=vertical optical element]{south west}
+  \inheritanchor[from=vertical optical element]{south}
+  \inheritanchor[from=vertical optical element]{south east}
+  \inheritanchor[from=vertical optical element]{east}
+  \inheritanchor[from=vertical optical element]{north east}
+  \inheritanchor[from=vertical optical element]{center}
+  
+  % Define anchors where the beam hits variaus parts of the cube
+  \anchor{beam nee}{%
+    \beamnee
+  }
+  
+  \anchor{beam nne}{%
+    \northeast \pgf@ya=\pgf@y
+    \beamnee \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@xa = \pgf@x \advance\pgf@xa by \pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+  
+  \anchor{beam nnw}{%
+    \southwest \pgf@xa=\pgf@x
+    \beamnee \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by \pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+
+  \anchor{beam nww}{%
+    \southwest \pgf@xa=\pgf@x
+    \beamnee \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by \pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+
+  \anchor{beam sww}{%
+    \southwest \pgf@xa=\pgf@x
+    \beamnee \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by -\pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+
+  \anchor{beam ssw}{%
+    \southwest \pgf@ya=\pgf@y
+    \beamnee \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@xa = \pgf@x \advance\pgf@xa by -\pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+
+  \anchor{beam sse}{%
+    \southwest \pgf@ya=\pgf@y
+    \beamnee \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@xa = \pgf@x \advance\pgf@xa by \pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+
+  \anchor{beam see}{%
+    \northeast \pgf@xa=\pgf@x
+    \beamnee \pgf@yc = \pgf@y
+    \pgfpointorigin
+    \pgf@ya = \pgf@y \advance\pgf@ya by -\pgf@yc
+    \pgfpoint{\pgf@xa}{\pgf@ya}}
+
+
+  \backgroundpath{%
+    % store lower left in xa/ya and upper right in xb/yb 
+    \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y 
+    \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+
+    % No rounded corners (don't know how to connect
+    % diagonal to rounded corners directly
+    \pgfsetcornersarced{\pgfpointorigin}
+    
+    % Draw a diagonal line
+    \ifnum \pgfkeysvalueof{/tikz/flip beam splitter axis} = 1
+    \pgfpathmoveto{\pgfpoint{\pgf@xb}{\pgf@ya}}
+    \pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@yb}}
+    \else
+    \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+    \fi
+    \pgfpathclose
+
+
+    % Draw cube
+    \pgfpathmoveto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+    \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@ya}}
+    \pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@yb}}
+    \pgfpathclose
+  }
+
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "optikztest"
+%%% End: 
