@@ -1,0 +1,555 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{cmha}[2019/06/29 CMHa Package]
+
+\RequirePackage{lmodern}
+\RequirePackage[english]{babel}
+%\RequirePackage{fancyhdr}
+\RequirePackage{lastpage}
+\RequirePackage{tikz}
+%\RequirePackage{titling}
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{fp}
+\RequirePackage{tabularx}
+\RequirePackage{adjustbox}
+\RequirePackage[per-mode=symbol]{siunitx}
+\RequirePackage[siunitx]{circuitikz}
+\RequirePackage{indentfirst}
+\RequirePackage{tabto}
+\RequirePackage{graphicx}
+\RequirePackage{csquotes}
+\RequirePackage{needspace}
+\RequirePackage{lastpage}
+\RequirePackage{geometry}
+\RequirePackage{changepage}
+\RequirePackage{sidenotes}
+\RequirePackage{optics}
+\RequirePackage{optikz}
+
+\RequirePackage{fontenc}
+\RequirePackage{hyperref}
+\RequirePackage{natbib}
+\RequirePackage{bibentry}
+\RequirePackage{optparams}
+\RequirePackage{paralist}
+\RequirePackage{placeins}
+\RequirePackage{ragged2e}
+\RequirePackage{setspace}
+\RequirePackage{textcase}
+\RequirePackage{textcomp}
+%\RequirePackage{titlesec}
+%\RequirePackage{titletoc}
+\RequirePackage{xcolor}
+\RequirePackage{xifthen}
+
+
+\RequirePackage{pifont}
+\RequirePackage{bbding}
+\RequirePackage{multicol}
+\RequirePackage{enumitem}
+
+%% 'sans serif' option
+\DeclareOption{sans}{
+  \renewcommand{\familydefault}{\sfdefault}
+}
+
+%% 'roman' option
+\DeclareOption{roman}{
+  \renewcommand{\familydefault}{\rmdefault}
+}
+
+%% Global indentation option
+\newif\if@neverindent\@neverindentfalse
+\DeclareOption{neverindent}{
+  \@neverindenttrue
+}
+
+\ExecuteOptions{roman}
+
+\ProcessOptions\relax
+
+%% Traditional LaTeX follows...
+% ...
+
+\newlength{\pardefault}
+\setlength{\pardefault}{\parindent}
+\newcommand{\neverindent}{ \setlength{\parindent}{0pt} }
+\newcommand{\autoindent}{ \setlength{\parindent}{\pardefault} }
+
+\if@neverindent
+\neverindent
+\fi
+
+% ...
+
+
+\newcommand{\vsp}{\vspace{1.5cm}}
+
+%\geometry{top=.7in,
+%bottom=.5in,
+%headsep=0.5cm,
+%  left=12mm, % left margin
+%  textwidth=150mm, % main text block
+%  marginparsep=2mm, % gutter between main text block and margin notes
+%  marginparwidth=50.mm % width of margin notes
+%}
+
+
+
+\usetikzlibrary{decorations.text}
+\usetikzlibrary{decorations.pathmorphing}
+
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns}
+\usetikzlibrary{shapes}
+\usetikzlibrary{plotmarks}
+
+
+
+
+
+
+\MakeOuterQuote{"}
+\newcommand{\vs}{\vspace{3cm}}
+
+
+%question enviroment
+\newtheoremstyle{QS} %for questions leaving answer space after (the 2.5cm space below
+{0pt} % Space above
+{2.5 cm} % Space below
+{} % Body font
+{\parindent} % Indent amount
+{\bfseries} % Theorem head font
+{:} % Punctuation after theorem head
+{0.5 em} % Space after theorem head
+%\Needspace{3\baselineskip} 
+{\thmname{#1}\thmnumber{#2}\thmnote{. #3}} % Theorem head spec (can be left empty, meaning `normal')
+
+\newtheoremstyle{qS} %for questions leaving answer space after (the 0.5cm space below
+{0pt} % Space above
+{1cm} % Space below
+{} % Body font
+{\parindent} % Indent amount
+{\bfseries} % Theorem head font
+{:} % Punctuation after theorem head
+{0.5 em} % Space after theorem head
+{\thmname{#1}\thmnumber{#2}\thmnote{. #3}} % Theorem head spec (can be left empty, meaning `normal')  
+  
+  
+\theoremstyle{QS}  
+\newtheorem{Q}{R}
+
+\AtBeginEnvironment{Q}{\Needspace{3cm}}% \break if fewer than 3cm is available on page
+
+\theoremstyle{qS}
+\newtheorem{q}[Q]{R}
+
+
+
+
+%HEADER AND FOOTER STYLES
+
+\def\parsedate #1:20#2#3#4#5#6#7#8\empty{#4#5/20#2#3}
+\def\moddate#1{\expandafter\parsedate\pdffilemoddate{#1}\empty}
+
+%\pagestyle{fancy} %page numbering and header
+%{
+%\fancyhf{}
+
+%\rhead{\flushright\theactivity\hspace{1cm}\thepage /\pageref{LastPage}}
+%\lfoot{}
+%\renewcommand{\headrulewidth}{0pt}
+%}
+%\newcommand{\theactivity}{NN}
+%\renewcommand{\theactivity}{\mytitle}
+
+
+%\fancypagestyle{plain}{%
+%\fancyhf{} % clear all header and footer fields
+%\lhead{\flushleft\textbf{\large{\mytitle}}} 
+%\rhead{Name:\underline{\hspace{5cm}}}%\rule{2in}{.5pt}
+%\fancyfoot[L]{\tiny{C. Howald, Marietta College (\moddate{\jobname.tex})}} % except the footer
+%\fancyfoot[R]{\small{more on reverse $\rightarrow$}} % except the footer
+%\renewcommand{\headrulewidth}{0pt}
+%\renewcommand{\footrulewidth}{0pt}}
+
+
+
+%circuitikz additional elements
+\def\bulb#1#2{
+\begin{scope}[shift={#1}, rotate=#2,scale=.25]
+    \begin{scope}[shift={(0,3.7)}]
+    	\draw[fill=white] (0,1) circle (2cm);
+		\draw[white,fill=white] (-1.1,-.6) rectangle (1.1,-1.7);
+		\draw (-1.1,-.67) to (-1.1,-1.8);
+		\draw (1.1,-.67) to (1.1,-1.8);
+		\draw (-.3,-3.4) rectangle (.3,-3.7);
+		\draw[fill=white] (0,-3) circle [x radius=1cm, y radius=0.5cm];
+		\draw[white,fill=white] (-.3,-3.4) rectangle (.3,-3.7);
+		\draw (-.3,-3.46) rectangle (.3,-3.7);
+		\draw[fill=white] (-1.1,-1.7) rectangle (1.1,-3);
+		%\draw (-1,-7) rectangle (1,-4);
+		%\draw (-.2,-4) rectangle (.2,-3.8);
+		%\draw (0,-3.7) to (0,-3.8);
+	\end{scope}
+\end{scope}
+}
+
+\def\battery#1#2{
+\begin{scope}[shift={#1}, rotate=#2]
+    \begin{scope}[shift={(0,0)}]
+
+		\draw (-.33,0) rectangle (.33,.933);
+		\draw (-.066,.933) rectangle (.066,1);
+		%\draw (0,-3.7) to (0,-3.8);
+	\end{scope}
+\end{scope}
+}
+
+\def\switch#1#2{
+\begin{scope}[shift={#1}, rotate=#2]
+    \begin{scope}[shift={(0,0)}]
+
+		
+		\draw (.8,-.15) rectangle (1,.15);
+		\begin{scope}[rotate=30]
+			\draw (0,-.1) rectangle (1.3,.1);
+		\end{scope}
+		\draw[fill=white] (0,-.15) rectangle (.2,.15);
+		\draw (-.1,-.35) rectangle (1.1,-.15);
+	\end{scope}
+\end{scope}
+}
+
+
+
+% chapter and section formatting
+% chapter format
+%\usepackage{etoolbox}
+%\makeatletter
+%\patchcmd{\chapter}{\if@openright\cleardoublepage\else\clearpage\fi}{}{}{}
+%\makeatother
+
+%\titleformat{\chapter}
+%  [block]% shape
+%  {\relax\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
+%  {\LARGE\thechapter}% label
+%  {1em}% horizontal separation between label and title body
+%  {\LARGE\rmfamily}% before the title body
+%  [\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\end{fullwidth}}{}]% after the title body
+  
+%\titleformat{\section}
+%  [block]% shape
+%  {\relax\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
+%  {\LARGE\thesection}% label
+%  {1em}% horizontal separation between label and title body
+%  {\LARGE\rmfamily}% before the title body
+%  [\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\end{fullwidth}}{}]% after the title body
+    
+  
+%\setcounter{secnumdepth}{2}
+%\titlespacing{\chapter}{0pt}{5pt}{0pt}
+%\titlespacing{\section}{0pt}{5pt}{0pt}
+%\titlespacing{\subsection}{0pt}{5pt}{0pt}
+
+%some old graph macros
+\newcommand{\sideargand}{\sidenote{
+\begin{tikzpicture} 
+[scale=0.3,dotstyle/.style={circle,fill=gray!40,scale=0.2}]
+\FPset\xo{2}
+
+\FPset\xmin{-7}
+\FPset\xmax{7}
+\FPset\ymin{-7}
+\FPset\ymax{7}
+
+
+
+\FPeval\xstep{(\xmin)+1}
+\FPeval\ystep{(\ymin)+1}
+
+
+
+ %dotgrid
+  \foreach \x in {\xmin,\xstep,...,\xmax}
+    \foreach \y in {\ymin,\ystep,...,\ymax}  
+      \node[dotstyle] at (\x,\y) {};
+      
+      
+%xlabels
+%\foreach \x in {\xmin,2,...,\xmax}{\FPeval\xlabel{round((\x)*1,1)}; \node[] at (\x,\ymin) [below] {\xlabel};}
+%ylabels
+%\foreach \y in {\ymin,2,...,\ymax}  	{\FPeval\ylabel{round((\y)*0.1,1)}; \node[] at (\xmin,\y) [left] {\ylabel};}
+
+
+
+%axes
+\draw[arrows={-triangle 45},lightgray,thin] (-.5+\xmin,0) to (\xmax+0.5,0) node [below right, black]{Re};
+\draw[arrows={-triangle 45},lightgray,thin] (0,-.5+\ymin) to (0,\ymax+0.5) node [above left, black,xshift=-0cm,rotate=90]{Im};
+
+
+%data
+%\draw[thick,blue] (0,0) -- (10,3.5);
+\end{tikzpicture}
+}
+}
+
+
+\newcommand{\sidesketch}{\sidenote{
+\begin{tikzpicture} 
+[scale=0.3,dotstyle/.style={circle,fill=gray!40,scale=0.2}]
+\FPset\xo{2}
+
+\FPset\xmin{-7}
+\FPset\xmax{7}
+\FPset\ymin{-3}
+\FPset\ymax{3}
+
+
+
+\FPeval\xstep{(\xmin)+1}
+\FPeval\ystep{(\ymin)+1}
+
+
+
+ %dotgrid
+  \foreach \x in {\xmin,\xstep,...,\xmax}
+    \foreach \y in {\ymin,\ystep,...,\ymax}  
+      \node[dotstyle] at (\x,\y) {};
+      
+      
+%xlabels
+%\foreach \x in {\xmin,2,...,\xmax}{\FPeval\xlabel{round((\x)*1,1)}; \node[] at (\x,\ymin) [below] {\xlabel};}
+%ylabels
+%\foreach \y in {\ymin,2,...,\ymax}  	{\FPeval\ylabel{round((\y)*0.1,1)}; \node[] at (\xmin,\y) [left] {\ylabel};}
+
+
+
+%axes
+\draw[arrows={-triangle 45},lightgray,thin] (-.5+\xmin,0) to (\xmax+0.5,0) node [below right, black]{\mathstrut};
+\draw[arrows={-triangle 45},lightgray,thin] (0,-.5+\ymin) to (0,\ymax+0.5) node [above left, black,xshift=-0cm,rotate=90]{\mathstrut};
+
+
+%data
+%\draw[thick,blue] (0,0) -- (10,3.5);
+\end{tikzpicture}
+}
+}
+
+
+%some old graph macros
+\newcommand{\sidefbd}{\marginpar{
+\begin{tikzpicture} 
+[scale=0.4,dotstyle/.style={circle,fill=gray!40,scale=0.2}]
+\FPset\xo{2}
+
+\FPset\xmin{-7}
+\FPset\xmax{7}
+\FPset\ymin{-7}
+\FPset\ymax{7}
+
+
+
+\FPeval\xstep{(\xmin)+1}
+\FPeval\ystep{(\ymin)+1}
+
+
+
+ %dotgrid
+  \foreach \x in {\xmin,\xstep,...,\xmax}
+    \foreach \y in {\ymin,\ystep,...,\ymax}  
+      \node[dotstyle] at (\x,\y) {};
+      
+      
+%xlabels
+%\foreach \x in {\xmin,2,...,\xmax}{\FPeval\xlabel{round((\x)*1,1)}; \node[] at (\x,\ymin) [below] {\xlabel};}
+%ylabels
+%\foreach \y in {\ymin,2,...,\ymax}  	{\FPeval\ylabel{round((\y)*0.1,1)}; \node[] at (\xmin,\y) [left] {\ylabel};}
+
+
+
+%axes
+\draw[arrows={-triangle 45},lightgray,thin] (-.5+\xmin,0) to (\xmax+0.5,0) node [below right, black]{x};
+\draw[arrows={-triangle 45},lightgray,thin] (0,-.5+\ymin) to (0,\ymax+0.5) node [above left, black,xshift=-0cm,rotate=90]{y};
+
+
+%data
+%\draw[thick,blue] (0,0) -- (10,3.5);
+\end{tikzpicture}
+}
+}
+
+
+%mygraph macro, the good one.
+\pgfkeys{
+ /mygraph/.is family, /mygraph,
+ % Here are the options that a user can pass
+ default/.style = 
+  {xmin = -1,
+   ymin = -1,
+   xrange = 8,
+   yrange = 8,
+   scale=0.3,
+   ylabel=,
+   xlabel=,
+   xunit=1,
+   yunit=1,
+   ticklabelspacing=2,
+   numerical=0,
+   drawingcommand={},
+   drawingcommandB={},
+   },
+ xmin/.estore in = \mygraphxmin,
+ ymin/.estore in = \mygraphymin,
+ xrange/.estore in = \mygraphxrange,
+ yrange/.estore in = \mygraphyrange,
+ scale/.estore in = \mygraphscale,
+ ylabel/.estore in = \mygraphyaxislabel,
+ xlabel/.estore in = \mygraphxaxislabel,
+ xunit/.estore in = \mygraphxunit,
+ yunit/.estore in = \mygraphyunit,
+ ticklabelspacing/.estore in = \mygraphticklabelstep,
+ numerical/.estore in = \mygraphnumerical,
+ drawingcommand/.estore in =  \mygraphdrawingcommand,
+drawingcommandB/.estore in =\mygraphdrawingcommandB,
+}
+
+
+\newcommand{\mygraph}[1][]{
+	\pgfkeys{/mygraph, default, #1}
+\begin{tikzpicture}[font=\sffamily,baseline={([yshift=-.5ex]current bounding box.center)},
+scale=\mygraphscale,dotstyle/.style={circle,fill=gray!40,scale=0.2}]
+
+%\FPeval\xmax{(\mygraphxmin)+(\mygraphxrange)}
+%\FPeval\ymax{\mygraphymin+\mygraphyrange}
+
+
+
+ %dotgrid
+  \foreach \x in {0,1,...,\mygraphxrange}
+    \foreach \y in {0,1,...,\mygraphyrange}  
+      \node[dotstyle] at (\x+\mygraphxmin,\y+\mygraphymin) {};
+    
+\pgfmathsetmacro\numxmarks{int((-\mygraphxmin)/\mygraphticklabelstep)+int((\mygraphxrange+\mygraphxmin)/\mygraphticklabelstep)}
+\pgfmathsetmacro\negxmarks{int(\mygraphxmin/\mygraphticklabelstep)} 
+\pgfmathsetmacro\numymarks{int((-\mygraphymin)/\mygraphticklabelstep)+int((\mygraphyrange+\mygraphymin)/\mygraphticklabelstep)}
+\pgfmathsetmacro\negymarks{int(\mygraphymin/\mygraphticklabelstep)}     
+%xlabels
+    \ifthenelse{\mygraphnumerical>0}{
+        
+\foreach \x in {0,1,...,\numxmarks}{\FPeval\xlabel{round((\x+\negxmarks)*\mygraphticklabelstep*\mygraphxunit,1)}; \node[] at (\mygraphticklabelstep*\x+\mygraphticklabelstep*\negxmarks,\mygraphymin) [below] {\xlabel};}
+}{}
+%ylabels
+
+\ifthenelse{\mygraphnumerical=1}{
+\foreach \y in {0,1,...,\numymarks}{\FPeval\ylabel{round((\y+\negymarks)*\mygraphticklabelstep*\mygraphyunit,1)}; \node[] at (\mygraphxmin,\mygraphticklabelstep*\y+\mygraphticklabelstep*\negymarks) [left] {\ylabel};}
+}{}
+
+%axes
+\draw[arrows={-triangle 45},gray!60,thin] (-.5+\mygraphxmin,0) to (\mygraphxmin+\mygraphxrange+0.5,0) node [below right, black]{\mathstrut \mygraphxaxislabel};
+\draw[arrows={-triangle 45},gray!60,thin] (0,-.5+\mygraphymin) to (0,\mygraphymin+\mygraphyrange+0.5) node(yaxistop) {};
+    \ifthenelse{\mygraphnumerical=1}{
+\node [below left = 0cm and 1.2cm of yaxistop, black,xshift=-0cm,rotate=90,node distance=2cm]{\mathstrut \mygraphyaxislabel};
+}{\node [below left = 0cm and .5cm of yaxistop, black,xshift=-0cm,rotate=90,node distance=2cm]{\mathstrut \mygraphyaxislabel};}
+
+
+%data
+\draw[thick,blue] \mygraphdrawingcommand;
+\draw \mygraphdrawingcommandB;
+\end{tikzpicture}
+}
+
+
+\def\ellip#1#2#3#4{
+\begin{scope}[shift={#1}, rotate=#2]
+    \draw[fill,gray!40 ] (0,0) ellipse (#3 and #4);
+\end{scope}
+}
+
+%
+\pgfkeys{
+ /myperson/.is family, /myperson,
+ % Here are the options that a user can pass
+ default/.style = 
+  {torsoA=30,
+   armA=-60,
+   forearmA = -40,
+   thighaA=-36,
+   thighbA=250,
+   calfaA=-110,
+   calfbA=-146,
+   pelvisX = 0,
+   pelvisY = 0,
+   },
+ torsoA/.estore in = \mypersontorsoA,
+ armA/.estore in = \mypersonarmA,
+ forearmA/.estore in = \mypersonforearmA,
+ thighaA/.estore in = \mypersonthighaA,
+ thighbA/.estore in = \mypersonthighbA,
+ calfaA/.estore in = \mypersoncalfaA,
+ calfbA/.estore in = \mypersoncalfbA,
+ pelvisX/.estore in = \mypersonpelvisX,
+ pelvisY/.estore in = \mypersonpelvisY,
+}
+
+%defined values for /myperson
+%human lengths between joints
+\newcommand*{\torsoL}{4.9}%
+\newcommand*{\armL}{2.7}
+\newcommand*{\forearmL}{2.7}
+\newcommand*{\thighL}{4.5}
+\newcommand*{\calfL}{4}
+
+%ellipses lengthened by this to enclose joints
+\newcommand*{\jointscale}{1.18}
+
+
+\newcommand{\myperson}[1][]{
+	\pgfkeys{/myperson, default, #1}
+
+\coordinate (P) at (0+\mypersonpelvisX,0+\mypersonpelvisY); %pelvis
+\coordinate (S) at ($ (P) + (\mypersontorsoA:\torsoL) $); %shoulder
+\coordinate (E) at ($ (S) + (\mypersonarmA:\armL)$); %elbow
+\coordinate (W) at ($ (E) + (\mypersonforearmA:\forearmL)$); %wrist
+
+\coordinate (Ka) at ($ (P) + (\mypersonthighaA:\thighL) $);%knee a
+\coordinate (Kb) at ($ (P) + (\mypersonthighbA:\thighL) $);%knee b
+\coordinate (Aa) at ($ (Ka) + (\mypersoncalfaA:\calfL)$);%ankle a
+\coordinate (Ab) at ($ (Kb) + (\mypersoncalfbA:\calfL)$);%ankle b
+
+\coordinate (H) at ($ {-1}*(P) + {1+0.33}*(S) - {1+0.33}*(P) $); %head
+
+\coordinate (T) at ($ 0.5*(P) + 0.5*(S) $);
+\coordinate (A) at ($ 0.5*(S) + 0.5*(E) $);
+\coordinate (F) at ($ 0.5*(E) + 0.5*(W) $);
+\coordinate (Ta) at ($ 0.5*(P) + 0.5*(Ka) $);
+\coordinate (Tb) at ($ 0.5*(P) + 0.5*(Kb) $);
+\coordinate (Ca) at ($ 0.5*(Ka) + 0.5*(Aa) $);
+\coordinate (Cb) at ($ 0.5*(Kb) + 0.5*(Ab) $);
+\coordinate (T) at ($ 0.5*(P) + 0.5*(S) $);
+
+\ellip{(S)}{0}{.3}{.3}
+\ellip{(E)}{0}{.2}{.2}
+\ellip{(W)}{0}{.2}{.2}
+
+\ellip{(P)}{0}{.2}{.2}
+\ellip{(Ka)}{0}{.2}{.2}
+\ellip{(Kb)}{0}{.2}{.2}
+\ellip{(Aa)}{0}{.2}{.2}
+\ellip{(Ab)}{0}{.2}{.2}
+\ellip{(P)}{0}{.2}{.2}
+
+\ellip{(T)}{{\mypersontorsoA}}{\jointscale*\torsoL/2}{1.1}
+\ellip{(A)}{{\mypersonarmA}}{\jointscale*\armL/2}{.5}
+\ellip{(F)}{{\mypersonforearmA}}{\jointscale*\forearmL/2}{.4}
+\ellip{(Ta)}{{\mypersonthighaA}}{\jointscale*\thighL/2}{.8}
+\ellip{(Tb)}{{\mypersonthighbA}}{\jointscale*\thighL/2}{.8}
+\ellip{(Ca)}{{\mypersoncalfaA}}{\jointscale*\calfL/2}{.6}
+\ellip{(Cb)}{{\mypersoncalfbA}}{\jointscale*\calfL/2}{.6}
+\ellip{(H)}{\mypersontorsoA}{1.3}{.9}
+
+}
+
+
+
+\endinput
